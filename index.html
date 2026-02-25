@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Competition Board</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Navbar Dropdown Styling */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropbtn {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropbtn:hover {
+      color: var(--accent);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: rgba(255,255,255,0.08);
+      min-width: 160px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      top: 40px;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+    }
+
+    .dropdown-content a:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      .dropdown-content {
+        top: 35px;
+        min-width: 120px;
+      }
+      .dropbtn {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Competition Leaderboards Skills Day</h1>
+  <p>Live Team Rankings — Skills day 2026</p>
+
+  <nav class="navbar">
+    <a href="index.html">🏆 Dashboard</a>
+    <a href="adminpanel.html">⚙️ Admin Panel</a>
+    <a href="about.html">ℹ️ About</a>
+
+    <div class="dropdown">
+      <button class="dropbtn">Select Leaderboard ▾</button>
+      <div class="dropdown-content" id="leaderboardDropdown"></div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <div id="playerList" class="ranking-list fade-in"></div>
+</div>
+
+<script type="module">
+  import { db, ref, onValue } from "./firebase-config.js";
+
+  const container = document.getElementById("playerList");
+  const dropdownContent = document.getElementById("leaderboardDropdown");
+
+  let currentLeaderboard = null;
+
+  function loadLeaderboards() {
+    onValue(ref(db, 'leaderboards'), snapshot => {
+      const data = snapshot.val() || {};
+      dropdownContent.innerHTML = '';
+
+      Object.keys(data).forEach(lb => {
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = lb;
+        a.addEventListener("click", e => {
+          e.preventDefault();
+          currentLeaderboard = lb;
+          document.querySelector(".dropbtn").textContent = lb + " ▾";
+          loadLeaderboard(currentLeaderboard);
+        });
+        dropdownContent.appendChild(a);
+      });
+
+      if (!currentLeaderboard && Object.keys(data).length > 0) {
+        currentLeaderboard = Object.keys(data)[0];
+        document.querySelector(".dropbtn").textContent = currentLeaderboard + " ▾";
+        loadLeaderboard(currentLeaderboard);
+      }
+    });
+  }
+
+  function loadLeaderboard(lbName) {
+    if (!lbName) return;
+
+    onValue(ref(db, `leaderboards/${lbName}`), snapshot => {
+      const data = snapshot.val() || {};
+      const arr = Object.entries(data).map(([name, d]) => ({
+        name,
+        points: Number(d.points || 0)
+      }));
+
+      arr.sort((a,b) => b.points - a.points);
+
+      container.innerHTML = "";
+
+      arr.forEach((team, index) => {
+        const card = document.createElement("div");
+        card.className =
+          "team-card " +
+          (index === 0 ? "top1 " : index === 1 ? "top2 " : index === 2 ? "top3 " : "") +
+          "fade-in";
+
+        card.innerHTML = `
+          <div class="rank">#${index + 1}</div>
+          <div class="team-info">
+            <div class="logo">${team.name.charAt(0).toUpperCase()}</div>
+            <div class="team-name">${team.name}</div>
+          </div>
+          <div class="points">${team.points} pts</div>
+        `;
+
+        container.appendChild(card);
+      });
+    });
+  }
+
+  loadLeaderboards();
+
+  const dropBtn = document.querySelector(".dropbtn");
+  const dropdown = document.querySelector(".dropdown-content");
+
+  dropBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.style.display =
+      dropdown.style.display === "block" ? "none" : "block";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".dropdown")) {
+      dropdown.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>

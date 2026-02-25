@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Panel - Update Leaderboards</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Navbar Dropdown Styling */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropbtn {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropbtn:hover {
+      color: var(--accent);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: rgba(255,255,255,0.08);
+      min-width: 160px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      top: 40px;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+    }
+
+    .dropdown-content a:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--accent);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Small adjustments for mobile */
+    @media (max-width: 480px) {
+      .dropdown-content {
+        top: 35px;
+        min-width: 120px;
+      }
+      .dropbtn {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+  <h1>Competition Leaderboards Skills Day</h1>
+  <p>Live Team Rankings — Skills day 2026</p>
+
+    <nav class="navbar">
+      <a href="index.html">🏆 Dashboard</a>
+      <a href="adminpanel.html">⚙️ Admin Panel</a>
+      <a href="about.html">ℹ️ About</a>
+
+      <!-- Fancy Dropdown -->
+      <div class="dropdown">
+        <button class="dropbtn">Select Leaderboard ▾</button>
+        <div class="dropdown-content" id="leaderboardDropdown"></div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="admin-form fade-in">
+      <label>Select Leaderboard / Category</label>
+      <input id="leaderboardInput" list="leaderboardsDatalist" placeholder="e.g. Soccer" />
+      <datalist id="leaderboardsDatalist"></datalist>
+
+      <label>Team Name</label>
+      <input id="teamInput" placeholder="Enter team name" />
+
+      <label>Points</label>
+      <input id="points" type="number" min="0" value="0" />
+
+      <button id="update-btn">Add / Update Team</button>
+    </div>
+  </div>
+
+<script type="module">
+  import { db, ref, set, onValue } from './firebase-config.js';
+
+  const leaderboardInput = document.getElementById('leaderboardInput');
+  const leaderboardDatalist = document.getElementById('leaderboardsDatalist');
+  const teamInput = document.getElementById('teamInput');
+  const pointsInput = document.getElementById('points');
+  const updateBtn = document.getElementById('update-btn');
+
+  // Load existing leaderboards
+  function loadLeaderboards() {
+    onValue(ref(db, 'leaderboards'), snap => {
+      const data = snap.val() || {};
+      leaderboardDatalist.innerHTML = '';
+      Object.keys(data).forEach(lb => {
+        const opt = document.createElement('option');
+        opt.value = lb;
+        leaderboardDatalist.appendChild(opt);
+      });
+    });
+  }
+
+  loadLeaderboards();
+
+  updateBtn.addEventListener('click', async () => {
+    const leaderboard = leaderboardInput.value.trim();
+    const team = teamInput.value.trim();
+    const points = parseInt(pointsInput.value) || 0;
+
+    if (!leaderboard || !team) {
+      alert("⚠ Please enter leaderboard AND team name.");
+      return;
+    }
+
+    try {
+      // Save team under the selected leaderboard
+      await set(ref(db, `leaderboards/${leaderboard}/${team}`), { points });
+
+      alert(`✅ ${team} saved in ${leaderboard}!`);
+
+      // Clear inputs
+      teamInput.value = '';
+      pointsInput.value = 0;
+
+      // Refresh leaderboard list in case a new one was added
+      loadLeaderboards();
+    } catch (err) {
+      alert("❌ Error: " + err);
+    }
+  });
+</script>
+</body>
+</html>

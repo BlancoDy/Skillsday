@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About - Intramurals</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Navbar Dropdown Styling */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropbtn {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropbtn:hover {
+      color: var(--accent);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: rgba(255,255,255,0.08);
+      min-width: 160px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      top: 40px;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+    }
+
+    .dropdown-content a:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--accent);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Small adjustments for mobile */
+    @media (max-width: 480px) {
+      .dropdown-content {
+        top: 35px;
+        min-width: 120px;
+      }
+      .dropbtn {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+  <h1>Competition Leaderboards Skills Day</h1>
+  <p>Live Team Rankings — Skills day 2026</p>
+
+    <nav class="navbar">
+      <a href="index.html">🏆 Dashboard</a>
+      <a href="adminpanel.html">⚙️ Admin Panel</a>
+      <a href="about.html">ℹ️ About</a>
+
+      <!-- Fancy Dropdown -->
+      <div class="dropdown">
+        <button class="dropbtn">Select Leaderboard ▾</button>
+        <div class="dropdown-content" id="leaderboardDropdown"></div>
+      </div>
+    </nav>
+  </header>
+
+
+  <div class="container">
+    <div class="about fade-in">
+      <h2>🎉 Welcome to the Intramurals Ranking System</h2>
+      <p>
+        This platform tracks medal counts for Manolo Fortich National High School 
+        Intramurals 2025 in real-time using Firebase.
+      </p>
+
+      <!-- ✅ Feature Cards (unchanged) -->
+      <div class="about-cards">
+        <div class="card">
+          <h3>🚀 Developed By</h3>
+          <p>NanoNova Robotics Club – Programming Division</p>
+        </div>
+        <div class="card">
+          <h3>🎯 Purpose</h3>
+          <p>
+            To provide transparency, accessibility, and excitement by updating 
+           point counts instantly.
+          </p>
+        </div>
+        <div class="card">
+          <h3>💡 Features</h3>
+          <ul>
+            <li>Live Points tally</li>
+            <li>Smooth animations & ranking updates</li>
+            <li>Admin panel for updating scores</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ✅ Developer List (not carded) -->
+      <div class="dev-section fade-in">
+        <h3 class="dev-title">👨‍💻 Developers Of the Project</h3>
+        <ul class="developer-list">
+          <li><span>🧑‍🎨</span> Walter Luke III  – Overseer </li>
+          <li><span>🧑‍💻</span> Bien Dy – Main Project Developer</li>
+          <li><span>👩‍💻</span> James Clever - Co-Project Developer</li>
+          <li><span>👩‍🔬</span> Elijah Mitch – Testing and Minor Debugging </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
